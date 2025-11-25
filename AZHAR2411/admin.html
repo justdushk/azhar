@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS Админ-панель - Полный редактор контента</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+    <!-- Экран авторизации -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <div class="login-header">
+                <div class="login-icon">🔐</div>
+                <h1 class="login-title">CMS Админ-панель</h1>
+                <p class="login-subtitle">Войдите для управления контентом сайта</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Логин</label>
+                    <input type="text" class="form-input" id="username" placeholder="admin" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" class="form-input" id="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Войти</button>
+                <p class="demo-info">Демо: admin / admin123</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Основная админ-панель -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="notification" id="notification"></div>
+
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <div class="logo-admin">📋</div>
+                <div class="top-bar-title">
+                    <h1>CMS Админ-панель</h1>
+                    <div class="top-bar-subtitle">Полный контроль над контентом</div>
+                </div>
+            </div>
+            <div class="top-bar-right">
+                <button class="btn-sm btn-save" id="publishBtn" style="display:none;">📢 Опубликовать</button>
+                <button class="btn-sm btn-secondary" id="previewBtn">👁️ Предпросмотр</button>
+                <button class="btn-sm btn-secondary" id="syncBtn">🔄 Синхронизация</button>
+                <button class="btn-icon" id="logoutBtn">🚪</button>
+            </div>
+        </div>
+
+        <div class="main-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="sidebar-menu">
+                    <button class="menu-item active" data-view="dashboard">🏠 Dashboard</button>
+                    <button class="menu-item" data-view="navigation">🧭 Навигация</button>
+                    <button class="menu-item" data-view="pages">📄 Страницы</button>
+                    <button class="menu-item" data-view="sections">🧩 Редактор секций</button>
+                    <button class="menu-item" data-view="settings">⚙️ Настройки</button>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="content" id="mainContent"></main>
+        </div>
+    </div>
+
+    <!-- Модальные окна -->
+    <div class="modal" id="navModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="navModalTitle">Пункт навигации</h3>
+                <button class="modal-close" onclick="closeNavModal()">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Название *</label>
+                <input type="text" id="navName" class="form-input" placeholder="О центре" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">URL *</label>
+                <input type="text" id="navUrl" class="form-input" placeholder="#about или /page">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Позиция</label>
+                <input type="number" id="navPosition" class="form-input" value="0" min="0">
+            </div>
+            <button onclick="saveNavItem()" class="btn btn-primary">Сохранить</button>
+        </div>
+    </div>
+
+    <div class="modal" id="pageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Создать страницу</h3>
+                <button class="modal-close" onclick="closePageModal()">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Название страницы *</label>
+                <input type="text" id="pageName" class="form-input" placeholder="О нас" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">URL (slug) *</label>
+                <input type="text" id="pageSlug" class="form-input" placeholder="/about">
+            </div>
+            <div class="form-group">
+                <label class="form-label">SEO Title</label>
+                <input type="text" id="pageTitle" class="form-input" placeholder="О нас - Название сайта">
+            </div>
+            <div class="form-group">
+                <label class="form-label">SEO Description</label>
+                <textarea id="pageDesc" class="form-textarea" rows="3" placeholder="Описание для поисковых систем"></textarea>
+            </div>
+            <button onclick="savePage()" class="btn btn-primary">Создать</button>
+        </div>
+    </div>
+
+    <div class="modal" id="sectionModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 class="modal-title" id="sectionModalTitle">Создать секцию</h3>
+                <button class="modal-close" onclick="closeSectionModal()">✕</button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Выберите шаблон</label>
+                <div class="template-grid" id="templateGrid">
+                    <div class="template-card" data-template="text">
+                        <div class="template-icon">📝</div>
+                        <div class="template-name">Текст</div>
+                    </div>
+                    <div class="template-card" data-template="image">
+                        <div class="template-icon">🖼️</div>
+                        <div class="template-name">Изображение</div>
+                    </div>
+                    <div class="template-card" data-template="text-image">
+                        <div class="template-icon">📝🖼️</div>
+                        <div class="template-name">Текст + Картинка</div>
+                    </div>
+                    <div class="template-card" data-template="image-text">
+                        <div class="template-icon">🖼️📝</div>
+                        <div class="template-name">Картинка + Текст</div>
+                    </div>
+                    <div class="template-card" data-template="two-columns">
+                        <div class="template-icon">📊</div>
+                        <div class="template-name">Две колонки</div>
+                    </div>
+                    <div class="template-card" data-template="hero">
+                        <div class="template-icon">🎯</div>
+                        <div class="template-name">Hero секция</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sectionEditor" style="display:none;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Ширина секции</label>
+                        <select id="sectionWidth" class="form-select">
+                            <option value="100%">100% (полная ширина)</option>
+                            <option value="1200px" selected>1200px (стандарт)</option>
+                            <option value="800px">800px (узкая)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Высота (auto или px)</label>
+                        <input type="text" id="sectionHeight" class="form-input" value="auto">
+                    </div>
+                </div>
+
+                <div id="textBlock" class="editor-block">
+                    <div class="form-group">
+                        <label class="form-label">Текст</label>
+                        <textarea id="textContent" class="form-textarea" rows="5" placeholder="Введите текст..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Размер шрифта</label>
+                            <input type="number" id="fontSize" class="form-input" value="16" min="10" max="72">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Жирность</label>
+                            <select id="fontWeight" class="form-select">
+                                <option value="400">Обычный</option>
+                                <option value="600">Полужирный</option>
+                                <option value="700">Жирный</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Цвет текста</label>
+                            <input type="color" id="textColor" class="form-input" value="#333333">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="imageBlock" class="editor-block" style="display:none;">
+                    <div class="form-group">
+                        <label class="form-label">URL изображения</label>
+                        <input type="text" id="imageUrl" class="form-input" placeholder="https://...">
+                        <small>Или загрузите файл:</small>
+                        <input type="file" id="imageFile" accept="image/*" class="form-input">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Ширина изображения</label>
+                            <input type="text" id="imageWidth" class="form-input" value="100%">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Высота изображения</label>
+                            <input type="text" id="imageHeight" class="form-input" value="auto">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="linkBlock" class="editor-block" style="display:none;">
+                    <div class="form-group">
+                        <label class="form-label">Текст ссылки</label>
+                        <input type="text" id="linkText" class="form-input" placeholder="Нажмите здесь">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">URL ссылки</label>
+                        <input type="text" id="linkUrl" class="form-input" placeholder="https://...">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Позиция секции</label>
+                    <input type="number" id="sectionPosition" class="form-input" value="0" min="0">
+                </div>
+
+                <button onclick="saveSection()" class="btn btn-primary">Сохранить секцию</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="previewModal">
+        <div class="modal-content modal-fullscreen">
+            <div class="modal-header">
+                <h3 class="modal-title">Предпросмотр</h3>
+                <button class="modal-close" onclick="closePreviewModal()">✕</button>
+            </div>
+            <iframe id="previewFrame" style="width:100%;height:calc(100vh - 120px);border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+        </div>
+    </div>
+
+    <script src="admin-script.js"></script>
+</body>
+</html>
