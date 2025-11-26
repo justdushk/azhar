@@ -90,7 +90,7 @@ nav {
   gap: 2rem;
 }
 
-nav a {
+nav a, nav .nav-item-with-dropdown {
   color: #334155;
   text-decoration: none;
   font-weight: 500;
@@ -98,6 +98,46 @@ nav a {
   transition: color 0.3s ease;
   position: relative;
   padding-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.nav-item-with-dropdown {
+  display: inline-block;
+}
+
+.nav-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  min-width: 200px;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  z-index: 1000;
+}
+
+.nav-item-with-dropdown:hover .nav-dropdown {
+  display: block;
+}
+
+.nav-dropdown a {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: #334155;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.nav-dropdown a:hover {
+  background: #f3f4f6;
+}
+
+.nav-dropdown a::after, .nav-dropdown a::before {
+  display: none;
 }
 
 nav a::after {
