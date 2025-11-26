@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin-page">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Админ-панель</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="nav-item active" data-route="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="#navigation" class="nav-item" data-route="navigation">
+                    <span class="nav-icon">🧭</span>
+                    <span class="nav-text">Навигация</span>
+                </a>
+                <a href="#pages" class="nav-item" data-route="pages">
+                    <span class="nav-icon">📄</span>
+                    <span class="nav-text">Страницы</span>
+                </a>
+                <a href="#sections" class="nav-item" data-route="sections">
+                    <span class="nav-icon">🧩</span>
+                    <span class="nav-text">Секции</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn btn-secondary">Выход</button>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1 id="pageTitle">Dashboard</h1>
+            </header>
+            
+            <div id="contentArea" class="content-area">
+                <!-- Content will be loaded here by router -->
+            </div>
+        </main>
+    </div>
+    
+    <script type="module" src="js/core/config.js"></script>
+    <script type="module" src="js/core/supabase.js"></script>
+    <script type="module" src="js/core/auth.js"></script>
+    <script type="module" src="js/core/ui.js"></script>
+    <script type="module" src="js/core/router.js"></script>
+    <script type="module" src="js/modules/dashboard.js"></script>
+    <script type="module" src="js/modules/navigation.js"></script>
+    <script type="module" src="js/modules/pages.js"></script>
+    <script type="module" src="js/modules/sections.js"></script>
+    <script type="module">
+        import { initRouter } from './js/core/router.js';
+        import { isAuthenticated, logout } from './js/core/auth.js';
+        
+        // Check authentication
+        if (!isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+        
+        // Initialize router
+        initRouter();
+        
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            logout();
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>
