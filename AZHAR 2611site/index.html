@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>КГП на ПХВ "Областной реабилитационный центр"</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="top"></div>
+    <div class="overlay" id="overlay"></div>
+
+    <header id="header">
+        <div class="nav-container">
+            <a href="#top" class="logo">
+                <div class="logo-mark">
+                    <img src="images/logo.png" alt="">
+                </div>
+                <span>КГП на ПХВ "Областной реабилитационный центр"</span>
+            </a>
+            <button class="mobile-toggle" id="mobileToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav id="mainNav">
+                <!-- Динамическое меню будет вставляться здесь -->
+                <div class="lang-switcher">
+                    <span id="langRu" class="lang-option active" onclick="switchLanguage('ru')">RUS</span>
+                    <span id="langKz" class="lang-option" onclick="switchLanguage('kz')">QAZ</span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Герой секция -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Профессиональная реабилитация для детей</h1>
+                <p>Комплексная медицинская помощь, современное оборудование и квалифицированные специалисты для восстановления здоровья вашего ребёнка</p>
+                <div class="hero-actions">
+                    <a href="#contact" class="btn btn-primary">Записаться на приём</a>
+                    <a href="#services" class="btn btn-outline">Узнать больше</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-card card-1">
+                    <div class="card-icon">100+</div>
+                    <p>Посещений в смену</p>
+                </div>
+                <div class="floating-card card-2">
+                    <div class="card-icon">25+</div>
+                    <p>Лет опыта</p>
+                </div>
+                <div class="floating-card card-3">
+                    <div class="card-icon">10K+</div>
+                    <p>Пациентов ежегодно</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Динамические секции из Supabase -->
+    <div id="page-content">
+        <!-- Статический контент можно оставить или заменить динамикой -->
+    </div>
+
+    <!-- Контакты (статическая секция) -->
+    <section class="section" id="contact">
+        <div class="contact-wrapper">
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h2>Свяжитесь с нами</h2>
+                    <p>Запишитесь на приём или получите консультацию. Мы принимаем детей от 1 года до 18 лет по направлению врача и ОСМС.</p>
+                    <div class="contact-items">
+                        <div class="contact-item">
+                            <div class="contact-icon">📍</div>
+                            <div class="contact-details">
+                                <h4>Адрес</h4>
+                                <p>г. Павлодар, улица Лермонтова, 59</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">💳</div>
+                            <div class="contact-details">
+                                <h4>Приём по ОСМС</h4>
+                                <p>По направлению специалистов первичной медико-санитарной помощи</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-items">
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div class="contact-details">
+                            <h4>Регистратура</h4>
+                            <p><a href="tel:555210">55-52-10</a></p>
+                            <p><a href="tel:+77084665715">8 (708) 466-57-15</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">☎</div>
+                        <div class="contact-details">
+                            <h4>Телефон доверия</h4>
+                            <p><a href="tel:553204">55-32-04</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">⏰</div>
+                        <div class="contact-details">
+                            <h4>Режим работы</h4>
+                            <p>Пн-Пт: 8:00 - 18:00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-content">
+                <h3 class="footer-title">КГП на ПХВ "Областной реабилитационный центр"</h3>
+                <p class="footer-subtitle">Здоровье и развитие детей — наш главный приоритет</p>
+            </div>
+            <div class="footer-divider"></div>
+            <div class="footer-copyright">
+                <p>© 2025 КГП на ПХВ "Областной реабилитационный центр". Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="site-supabase.js"></script>
+    <script type="module" src="script.js"></script>
+    <script src="translate.js"></script>
+</body>
+</html>
