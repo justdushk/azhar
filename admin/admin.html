@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Universal CMS</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>⚡ Admin Panel</h2>
+      </div>
+      
+      <nav>
+        <ul class="sidebar-nav">
+          <li><a href="#dashboard" data-route="dashboard" class="active">📊 Dashboard</a></li>
+          <li><a href="#navigation" data-route="navigation">🧭 Навигация</a></li>
+          <li><a href="#pages" data-route="pages">📄 Страницы</a></li>
+          <li><a href="#sections" data-route="sections">📦 Секции</a></li>
+        </ul>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <button id="logout-btn" class="btn btn-secondary" style="width: 100%;">Выход</button>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Dashboard View -->
+      <div id="dashboard-view" class="view">
+        <div class="content-header">
+          <h1>Dashboard</h1>
+        </div>
+        <div id="dashboard-stats"></div>
+      </div>
+      
+      <!-- Navigation View -->
+      <div id="navigation-view" class="view">
+        <div class="content-header">
+          <h1>Управление навигацией</h1>
+          <button id="add-nav-item" class="btn btn-primary">+ Добавить пункт</button>
+        </div>
+        <div id="navigation-list"></div>
+      </div>
+      
+      <!-- Pages View -->
+      <div id="pages-view" class="view">
+        <div class="content-header">
+          <h1>Управление страницами</h1>
+          <button id="add-page" class="btn btn-primary">+ Добавить страницу</button>
+        </div>
+        <div id="pages-list"></div>
+      </div>
+      
+      <!-- Sections View -->
+      <div id="sections-view" class="view">
+        <div class="content-header">
+          <h1>Управление секциями</h1>
+          <button id="add-section" class="btn btn-primary">+ Добавить секцию</button>
+        </div>
+        <div id="sections-list"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Load Supabase from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Load Config -->
+  <script src="config.js"></script>
+  
+  <!-- Load Core Modules -->
+  <script src="js/core/auth.js"></script>
+  <script src="js/core/supabase.js"></script>
+  <script src="js/core/router.js"></script>
+  <script src="js/core/ui.js"></script>
+  <script src="js/core/table.js"></script>
+  <script src="js/core/form.js"></script>
+  
+  <!-- Load Feature Modules -->
+  <script src="js/modules/dashboard.js"></script>
+  <script src="js/modules/navigation.js"></script>
+  <script src="js/modules/pages.js"></script>
+  <script src="js/modules/sections.js"></script>
+  
+  <!-- Initialize App -->
+  <script>
+    // Require authentication
+    (async function() {
+      const isAuth = await Auth.requireAuth();
+      if (!isAuth) {
+        // Will redirect to login
+        return;
+      }
+      
+      // Continue initialization
+      // Initialize Supabase
+      if (SupabaseService.init()) {
+        console.log('✅ Admin Panel initialized');
+        
+        // Initialize router
+        Router.init();
+      } else {
+        document.body.innerHTML = `
+          <div style="padding: 40px; text-align: center; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #ef4444; margin-bottom: 20px;">⚠️ Ошибка конфигурации Supabase</h1>
+            <p style="margin-bottom: 15px;">Пожалуйста, настройте подключение к Supabase в файле <code>config.js</code></p>
+            
+            <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: left;">
+              <h3 style="margin-top: 0;">Инструкция:</h3>
+              <ol style="line-height: 1.8;">
+                <li>Создайте проект на <a href="https://supabase.com" target="_blank" style="color: #4f46e5;">supabase.com</a></li>
+                <li>Выполните SQL из <code>admin/database-setup.sql</code></li>
+                <li>Скопируйте Project URL и anon key</li>
+                <li>Вставьте в <code>admin/config.js</code></li>
+              </ol>
+            </div>
+            
+            <p style="color: #64748b; font-size: 14px;">
+              После настройки перезагрузите страницу
+            </p>
+          </div>
+        `;
+      }
+    })();
+    
+    // Logout handler
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      if (confirm('Выйти из панели управления?')) {
+        await Auth.logout();
+      }
+    });
+  </script>
+</body>
+</html>
