@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход - Admin Panel</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box">
+      <h1>🔐 Вход в панель</h1>
+      
+      <div id="error-container"></div>
+      <div id="loading-container" style="display: none; text-align: center; margin: 20px 0;">
+        <p style="color: var(--text-light);">Проверка авторизации...</p>
+      </div>
+      
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required autofocus placeholder="your@email.com">
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Пароль</label>
+          <input type="password" id="password" name="password" required placeholder="••••••••">
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Войти</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Load Supabase from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Load Config -->
+  <script src="config.js"></script>
+  
+  <!-- Load Auth Module -->
+  <script src="js/core/auth.js"></script>
+  
+  <script>
+    // Wait for scripts to load before checking auth
+    window.addEventListener('DOMContentLoaded', async function() {
+      // Check URL parameters - if ?logout=true, don't redirect
+      const urlParams = new URLSearchParams(window.location.search);
+      const forceLogin = urlParams.get('logout') === 'true' || urlParams.get('force') === 'true';
+      
+      // Check if already logged in (only redirect if not forced to login page)
+      if (!forceLogin) {
+        const loadingContainer = document.getElementById('loading-container');
+        loadingContainer.style.display = 'block';
+        
+        const isAuth = await Auth.isAuthenticated();
+        loadingContainer.style.display = 'none';
+        
+        if (isAuth) {
+          window.location.href = 'admin.html';
+          return;
+        }
+      }
+      
+      // Handle login form
+      document.getElementById('login-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorContainer = document.getElementById('error-container');
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        
+        // Disable form
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Вход...';
+        errorContainer.innerHTML = '';
+        
+        try {
+          const result = await Auth.login(email, password);
+          
+          if (result.success) {
+            window.location.href = 'admin.html';
+          } else {
+            errorContainer.innerHTML = `<div class="error-message">${result.error}</div>`;
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Войти';
+          }
+        } catch (error) {
+          errorContainer.innerHTML = `<div class="error-message">Ошибка: ${error.message}</div>`;
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Войти';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
