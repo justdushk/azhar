@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import "./index.css";
 import "./i18n";
 import Header from "./components/Header.tsx";
