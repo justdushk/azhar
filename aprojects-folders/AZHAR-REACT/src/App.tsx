@@ -1,3 +1,6 @@
+import React, { Suspense } from "react";
+import "./index.css";
+import "./i18n";
 import Header from "./components/Header.tsx";
 import Hero from "./components/Hero.tsx";
 import About from "./components/About.tsx";
@@ -10,7 +13,7 @@ import "./style.css"; // твой CSS
 
 function App() {
   return (
-    <div>
+    <Suspense fallback={<div>Loading...</div>}>
       <Header />
       <main>
         <Hero />
@@ -20,7 +23,7 @@ function App() {
         <Contacts />
       </main>
       <Footer />
-    </div>
+    </Suspense>
   );
 }
 

@@ -1,18 +1,21 @@
-function Header() {
+import React from "react";
+import { useTranslation } from "react-i18next";
+
+export default function Hero() {
+  const { t } = useTranslation();
+
   return (
     <footer>
         <div className="footer-container">
             <div className="footer-content">
-                <h3 className="footer-title">КГП на ПХВ "Областной реабилитационный центр"</h3>
-                <p className="footer-subtitle">Здоровье и развитие детей — наш главный приоритет</p>
+                <h3 className="footer-title">{t("footer.title")}</h3>
+                <p className="footer-subtitle">{t("footer.subtitle")}</p>
             </div>
             <div className="footer-divider"></div>
             <div className="footer-copyright">
-                <p>© 2025 КГП на ПХВ "Областной реабилитационный центр". Все права защищены.</p>
+                <p>{t("footer.copyright")}</p>
             </div>
         </div>
     </footer>
   );
 }
-
-export default Header;

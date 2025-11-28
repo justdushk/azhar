@@ -1,13 +1,17 @@
-import orig from "../assets/orig.jpeg"; // если положишь orig.jpeg в src/assets
+import React from "react";
+import { useTranslation } from "react-i18next";
+import orig from "../assets/orig.jpeg";
 
-function Header() {
+export default function About() {
+  const { t } = useTranslation();
+
   return (
     <section className="section" id="about">
         <div className="section-header">
-            <span className="section-badge">О центре</span>
-            <h2 className="section-title">Забота о здоровье детей с 1998 года</h2>
+            <span className="section-badge">{t("about.badge")}</span>
+            <h2 className="section-title">{t("about.title")}</h2>
             <p className="section-description">
-                Мы обеспечиваем доступную и качественную медицинскую помощь для восстановления и развития детей Павлодарской области
+                {t("about.description")}
             </p>
         </div>
         <div className="about-grid">
@@ -16,22 +20,22 @@ function Header() {
                 <div className="feature">
                     <div className="feature-icon">01</div>
                     <div className="feature-content">
-                        <h3>Наша миссия</h3>
-                        <p>Оказание доступной, качественной и эффективной медицинской помощи по восстановительному лечению и реабилитации детей</p>
+                        <h3>{t("about.mission.title")}</h3>
+                        <p>{t("about.mission.text")}</p>
                     </div>
                 </div>
                 <div className="feature">
                     <div className="feature-icon">02</div>
                     <div className="feature-content">
-                        <h3>Наша цель</h3>
-                        <p>Развитие, совершенствование и улучшение качества оказания восстановительного лечения и медицинской реабилитации</p>
+                        <h3>{t("about.goal.title")}</h3>
+                        <p>{t("about.goal.text")}</p>
                     </div>
                 </div>
                 <div className="feature">
                     <div className="feature-icon">03</div>
                     <div className="feature-content">
-                        <h3>Комплексный подход</h3>
-                        <p>Мультидисциплинарная бригада специалистов: невролог, врач ЛФК, ортопед-травматолог, физиотерапевт, психолог, логопед</p>
+                        <h3>{t("about.approach.title")}</h3>
+                        <p>{t("about.approach.text")}</p>
                     </div>
                 </div>
             </div>
@@ -39,5 +43,3 @@ function Header() {
     </section>
   );
 }
-
-export default Header;

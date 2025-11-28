@@ -1,10 +1,16 @@
-function Header() {
+// src/components/Hero.tsx
+import React from "react";
+import { useTranslation } from "react-i18next";
+
+export default function Hero() {
+  const { t } = useTranslation();
+
   return (
     <section className="hero">
         <div className="hero-container">
             <div className="hero-content">
-                <h1>Профессиональная реабилитация для детей</h1>
-                <p>Комплексная медицинская помощь, современное оборудование и квалифицированные специалисты для восстановления здоровья вашего ребёнка</p>
+                <h1>{t("hero.title")}</h1>
+                <p>{t("hero.description")}</p>
                 <div className="hero-actions">
                     <a href="#contact" className="btn btn-primary">
                         Записаться на приём

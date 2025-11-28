@@ -1,24 +1,29 @@
-function Header() {
+import React from "react";
+import { useTranslation } from "react-i18next";
+
+export default function Hero() {
+  const { t } = useTranslation();
+
   return (
     <section className="section" id="contact">
         <div className="contact-wrapper">
             <div className="contact-grid">
                 <div className="contact-info">
-                    <h2>Свяжитесь с нами</h2>
-                    <p>Запишитесь на приём или получите консультацию. Мы принимаем детей от 1 года до 18 лет по направлению врача и ОСМС.</p>
+                    <h2>{t("contact.title")}</h2>
+                    <p>{t("contact.description")}</p>
                     <div className="contact-items">
                         <div className="contact-item">
                             <div className="contact-icon">📍</div>
                             <div className="contact-details">
-                                <h4>Адрес</h4>
-                                <p>г. Павлодар, улица Лермонтова, 59</p>
+                                <h4>{t("contact.address.title")}</h4>
+                                <p>{t("contact.address.text")}</p>
                             </div>
                         </div>
                         <div className="contact-item">
                             <div className="contact-icon">💳</div>
                             <div className="contact-details">
-                                <h4>Приём по ОСМС</h4>
-                                <p>По направлению специалистов первичной медико-санитарной помощи</p>
+                                <h4>{t("contact.osms.title")}</h4>
+                                <p>{t("contact.osms.title")}</p>
                             </div>
                         </div>
                     </div>
@@ -27,7 +32,7 @@ function Header() {
                     <div className="contact-item">
                         <div className="contact-icon">📞</div>
                         <div className="contact-details">
-                            <h4>Регистратура</h4>
+                            <h4>{t("contact.registry.title")}</h4>
                             <p><a href="tel:555210">55-52-10</a></p>
                             <p><a href="tel:+77084665715">8 (708) 466-57-15</a></p>
                         </div>
@@ -35,15 +40,15 @@ function Header() {
                     <div className="contact-item">
                         <div className="contact-icon">☎</div>
                         <div className="contact-details">
-                            <h4>Телефон доверия</h4>
+                            <h4>{t("contact.hotline.title")}</h4>
                             <p><a href="tel:553204">55-32-04</a></p>
                         </div>
                     </div>
                     <div className="contact-item">
                         <div className="contact-icon">⏰</div>
                         <div className="contact-details">
-                            <h4>Режим работы</h4>
-                            <p>Пн-Пт: 8:00 - 18:00</p>
+                            <h4>{t("contact.schedule.title")}</h4>
+                            <p>{t("contact.schedule.text")}</p>
                         </div>
                     </div>
                 </div>
@@ -52,5 +57,3 @@ function Header() {
     </section>
   );
 }
-
-export default Header;
