@@ -16,6 +16,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+  width: 100%;
+  min-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Главный контейнер */
+main {
+  width: 100%;
+  min-width: 100%;
+}
+
 #top {
   position: absolute;
   top: 0;
@@ -31,6 +43,14 @@ header {
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(226, 232, 240, 0.5);
   transition: all 0.3s ease;
+}
+
+.about, .services, .values, .contact {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }
 
 header.scrolled {
@@ -221,6 +241,7 @@ nav a:hover::before {
 }
 
 .hero {
+  width: 100%;
   padding: 8rem 2rem 3rem;
   position: relative;
   overflow: hidden;
@@ -673,12 +694,19 @@ nav a:hover::before {
 }
 
 .contact-wrapper {
+  width: 100%;
   background: linear-gradient(135deg, #0F172A, #1E293B);
   border-radius: 24px;
-  padding: 3rem;
+  padding: 3rem 2rem;
   position: relative;
   overflow: hidden;
-  margin-top: -1rem;
+  margin: 0;
+}
+
+/* Внутренний контейнер для контента контактов */
+.contact-container {
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
 .contact-wrapper::before {
@@ -775,9 +803,19 @@ nav a:hover::before {
 }
 
 footer {
+  width: 100%;
   background: #0F172A;
-  padding: 2.5rem 2rem;
-  margin-top: 2rem;
+  color: white;
+  padding: 3rem 0 2rem;
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+}
+
+.footer-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
 .footer-content {
@@ -922,8 +960,10 @@ footer {
     transform: rotate(-45deg) translate(7px, -7px);
   }
   .hero {
+    width: 100%;
     padding: 6.5rem 1.25rem 3rem;
   }
+
   .hero-content {
     margin-left: 0;
   }
@@ -1017,7 +1057,7 @@ footer {
   }
   .contact-wrapper {
     padding: 2.25rem 1.75rem;
-    border-radius: 20px;
+    border-radius: 24px;
   }
   .contact-info h2 {
     font-size: 1.875rem;
@@ -1298,10 +1338,11 @@ footer {
 }
 
 .footer-divider {
-    height: 1px;
-    background: rgba(255, 255, 255, 0.2);
-    margin: 2rem auto;
-    max-width: 800px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 2rem auto;
+  width: 100%;
+  max-width: 1200px;
 }
 
 .footer-copyright {
@@ -1329,6 +1370,7 @@ footer {
     
     .footer-divider {
         margin: 1.3rem auto;
+        width: 100%;
     }
     
     .footer-copyright p {
