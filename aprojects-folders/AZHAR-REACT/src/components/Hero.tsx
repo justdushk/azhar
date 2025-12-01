@@ -1,5 +1,3 @@
-// src/components/Hero.tsx
-import React from "react";
 import { useTranslation } from "react-i18next";
 
 export default function Hero() {
@@ -38,5 +36,3 @@ export default function Hero() {
     </section>
   );
 }
-
-export default Header;
