@@ -1,16 +1,14 @@
-import { useTranslation } from "react-i18next";
+import { useText } from "../cms/useText";
 import orig from "../assets/orig.jpeg";
 
 export default function About() {
-  const { t } = useTranslation();
-
   return (
     <section className="section" id="about">
         <div className="section-header">
-            <span className="section-badge">{t("about.badge")}</span>
-            <h2 className="section-title">{t("about.title")}</h2>
+            <span className="section-badge">{useText("about.badge")}</span>
+            <h2 className="section-title">{useText("about.title")}</h2>
             <p className="section-description">
-                {t("about.description")}
+                {useText("about.description")}
             </p>
         </div>
         <div className="about-grid">
@@ -19,22 +17,22 @@ export default function About() {
                 <div className="feature">
                     <div className="feature-icon">01</div>
                     <div className="feature-content">
-                        <h3>{t("about.mission.title")}</h3>
-                        <p>{t("about.mission.text")}</p>
+                        <h3>{useText("about.mission.title")}</h3>
+                        <p>{useText("about.mission.text")}</p>
                     </div>
                 </div>
                 <div className="feature">
                     <div className="feature-icon">02</div>
                     <div className="feature-content">
-                        <h3>{t("about.goal.title")}</h3>
-                        <p>{t("about.goal.text")}</p>
+                        <h3>{useText("about.goal.title")}</h3>
+                        <p>{useText("about.goal.text")}</p>
                     </div>
                 </div>
                 <div className="feature">
                     <div className="feature-icon">03</div>
                     <div className="feature-content">
-                        <h3>{t("about.approach.title")}</h3>
-                        <p>{t("about.approach.text")}</p>
+                        <h3>{useText("about.approach.title")}</h3>
+                        <p>{useText("about.approach.text")}</p>
                     </div>
                 </div>
             </div>

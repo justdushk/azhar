@@ -1,18 +1,16 @@
-import { useTranslation } from "react-i18next";
+import { useText } from "../cms/useText";
 
-export default function Hero() {
-  const { t } = useTranslation();
-
+export default function Footer() {
   return (
     <footer>
         <div className="footer-container">
             <div className="footer-content">
-                <h3 className="footer-title">{t("footer.title")}</h3>
-                <p className="footer-subtitle">{t("footer.subtitle")}</p>
+                <h3 className="footer-title">{useText("footer.title")}</h3>
+                <p className="footer-subtitle">{useText("footer.subtitle")}</p>
             </div>
             <div className="footer-divider"></div>
             <div className="footer-copyright">
-                <p>{t("footer.copyright")}</p>
+                <p>{useText("footer.copyright")}</p>
             </div>
         </div>
     </footer>

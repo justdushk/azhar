@@ -7,10 +7,15 @@ import Services from "./components/Services.tsx";
 import Values from "./components/Values.tsx";
 import Contacts from "./components/Contact.tsx";
 import Footer from "./components/Footer.tsx";
+import { loadTranslations } from "./cms/loadTranslation";
 
 import "./style.css";
 
 function App() {
+  useEffect(() => {
+    const savedLang = (localStorage.getItem("language") as "ru" | "kz") || "ru";
+    loadTranslations(savedLang);
+  }, []);
   useEffect(() => {
     // Smooth scroll для всех якорей
     const anchors = document.querySelectorAll('a[href^="#"]');

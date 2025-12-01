@@ -1,35 +1,33 @@
-import { useTranslation } from "react-i18next";
+import { useText } from "../cms/useText";
 
 export default function Hero() {
-  const { t } = useTranslation();
-
   return (
     <section className="hero">
         <div className="hero-container">
             <div className="hero-content">
-                <h1>{t("hero.title")}</h1>
-                <p>{t("hero.description")}</p>
+                <h1>{useText("hero.title")}</h1>
+                <p>{useText("hero.description")}</p>
                 <div className="hero-actions">
                     <a href="#contact" className="btn btn-primary">
-                        {t("hero.btnPrimary")}
+                        {useText("hero.btnPrimary")}
                     </a>
                     <a href="#services" className="btn btn-outline">
-                        {t("hero.btnSecondary")}
+                        {useText("hero.btnSecondary")}
                     </a>
                 </div>
             </div>
             <div className="hero-visual">
                 <div className="floating-card card-1">
                     <div className="card-icon">100+</div>
-                    <p>{t("hero.card1")}</p>
+                    <p>{useText("hero.card1")}</p>
                 </div>
                 <div className="floating-card card-2">
                     <div className="card-icon">25+</div>
-                    <p>{t("hero.card2")}</p>
+                    <p>{useText("hero.card2")}</p>
                 </div>
                 <div className="floating-card card-3">
                     <div className="card-icon">10K+</div>
-                    <p>{t("hero.card3")}</p>
+                    <p>{useText("hero.card3")}</p>
                 </div>
             </div>
         </div>
