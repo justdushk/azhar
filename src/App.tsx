@@ -1,4 +1,5 @@
 import { Suspense, useEffect } from "react";
+import { useContentStore } from "./cms/contentStore";
 import "./i18n";
 import Header from "./components/Header.tsx";
 import Hero from "./components/Hero.tsx";
@@ -72,6 +73,26 @@ function App() {
       observer.disconnect();
     };
   }, []);
+
+  const isReady = useContentStore((s) => s.isReady);
+
+  useEffect(() => {
+    const savedLang = (localStorage.getItem("language") as "ru" | "kz") || "ru";
+    loadTranslations(savedLang);
+  }, []);
+
+  // ⛔ Пока переводы не загружены — показывать белый экран
+  if (!isReady) {
+    return (
+      <div
+        style={{
+          width: "100vw",
+          height: "100vh",
+          background: "white",
+        }}
+      />
+    );
+  }
 
   return (
     <Suspense fallback={<div>Loading...</div>}>

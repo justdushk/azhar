@@ -13,8 +13,6 @@ export async function loadTranslations(lang: "ru" | "kz") {
     return;
   }
 
-  console.log("✅ Данные из Supabase:", data);
-
   const map: Record<string, string> = {};
   const valueColumn = lang === "ru" ? "value_ru" : "value_kz";
   
@@ -22,8 +20,10 @@ export async function loadTranslations(lang: "ru" | "kz") {
     map[row.key] = row[valueColumn] || row.key;
   });
 
-  console.log("📦 Созданный map:", map);
-
   useContentStore.getState().setContent(map);
-  console.log("✅ Переводы загружены в store");
+
+  // ✔ Говорим приложению: «можно показывать страницу»
+  useContentStore.getState().setReady(true);
+
+  console.log("✅ Переводы загружены в store:", map);
 }
