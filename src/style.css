@@ -228,7 +228,16 @@ nav a:hover::before {
   border: none;
   cursor: pointer;
   padding: 0.5rem;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
+
+.mobile-toggle:focus,
+.mobile-toggle:active {
+  outline: none;
+  box-shadow: none;
+}
+
 
 .mobile-toggle span {
   display: block;
@@ -238,6 +247,7 @@ nav a:hover::before {
   margin: 5px 0;
   transition: all 0.3s;
   border-radius: 2px;
+  transform-origin: center;
 }
 
 .hero {
@@ -951,14 +961,17 @@ footer {
     z-index: 1002;
   }
   .mobile-toggle.active span:nth-child(1) {
-    transform: rotate(45deg) translate(5px, 5px);
-  }
-  .mobile-toggle.active span:nth-child(2) {
-    opacity: 0;
-  }
-  .mobile-toggle.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(7px, -7px);
-  }
+  transform: rotate(45deg) translate(3.2px, 7px);
+}
+
+.mobile-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-toggle.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(3.1px, -7.2px);
+}
+
   .hero {
     width: 100%;
     padding: 6.5rem 1.25rem 3rem;
@@ -1377,3 +1390,15 @@ footer {
         font-size: 0.7125rem;
     }
 }
+  .service-card,
+  .value-item,
+  .feature {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+
+  .animated-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }

@@ -1,34 +1,48 @@
 import { Suspense, useEffect } from "react";
 import { useContentStore } from "./cms/contentStore";
 import "./i18n";
-import Header from "./components/Header.tsx";
-import Hero from "./components/Hero.tsx";
-import About from "./components/About.tsx";
-import Services from "./components/Services.tsx";
-import Values from "./components/Values.tsx";
-import Contacts from "./components/Contact.tsx";
-import Footer from "./components/Footer.tsx";
+import Header from "./components/Header";
+import Hero from "./components/Hero";
+import About from "./components/About";
+import Services from "./components/Services";
+import Values from "./components/Values";
+import Contacts from "./components/Contact";
+import Footer from "./components/Footer";
 import { loadTranslations } from "./cms/loadTranslation";
 
 import "./style.css";
 
 function App() {
+  // ====== 1. загрузка языка ======
   useEffect(() => {
     const savedLang = (localStorage.getItem("language") as "ru" | "kz") || "ru";
     loadTranslations(savedLang);
   }, []);
+
+  // состояние загрузки CMS/переводов
+  const isReady = useContentStore((s) => s.isReady);
+
+  // ====== 2. Анимации + Smooth scroll ======
   useEffect(() => {
-    // Smooth scroll для всех якорей
+    if (!isReady) return; // запускаем только когда контент реально загрузился
+
+    // ====== Smooth Scroll ======
     const anchors = document.querySelectorAll('a[href^="#"]');
-    const handleClick = (e: any) => {
+    const handleClick = (e: Event) => {
       e.preventDefault();
-      const href = e.currentTarget.getAttribute("href");
-      if (href === "#") return;
+
+      const targetEl = e.currentTarget as HTMLAnchorElement;
+      const href = targetEl.getAttribute("href");
+      if (!href || href === "#") return;
+
       const target = document.querySelector(href);
       if (!target) return;
+
       const header = document.querySelector("header");
-      const headerHeight = header ? header.offsetHeight : 0;
-      const top = (target as HTMLElement).offsetTop - headerHeight;
+      const headerHeight = header ? (header as HTMLElement).offsetHeight : 0;
+
+      const rect = (target as HTMLElement).getBoundingClientRect();
+      const top = window.scrollY + rect.top - headerHeight;
 
       window.scrollTo({
         top,
@@ -38,50 +52,35 @@ function App() {
 
     anchors.forEach((a) => a.addEventListener("click", handleClick));
 
-    // IntersectionObserver для анимаций (КАК В СТАРОМ script.js)
-    const observerOptions = { 
-      threshold: 0.1, 
-      rootMargin: "0px 0px -50px 0px" 
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          // Меняем стили напрямую через DOM (как в старом коде)
-          (entry.target as HTMLElement).style.opacity = '1';
-          (entry.target as HTMLElement).style.transform = 'translateY(0)';
-        }
-      });
-    }, observerOptions);
+    // ====== АНИМАЦИИ IntersectionObserver ======
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("animated-visible");
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      }
+    );
 
-    // Находим элементы и настраиваем начальные стили
-    const elements = document.querySelectorAll(".service-card, .value-item, .feature");
-    elements.forEach((el) => {
-      const element = el as HTMLElement;
-      // Устанавливаем начальные стили (как в старом коде)
-      element.style.opacity = '0';
-      element.style.transform = 'translateY(30px)';
-      element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-      // Начинаем наблюдение
-      observer.observe(element);
-    });
+    const elements = document.querySelectorAll(
+      ".service-card, .value-item, .feature"
+    );
 
-    // Cleanup
+    elements.forEach((el) => observer.observe(el));
+
+    // ====== Cleanup ======
     return () => {
       anchors.forEach((a) => a.removeEventListener("click", handleClick));
-      elements.forEach((el) => observer.unobserve(el));
       observer.disconnect();
     };
-  }, []);
+  }, [isReady]);
 
-  const isReady = useContentStore((s) => s.isReady);
-
-  useEffect(() => {
-    const savedLang = (localStorage.getItem("language") as "ru" | "kz") || "ru";
-    loadTranslations(savedLang);
-  }, []);
-
-  // ⛔ Пока переводы не загружены — показывать белый экран
+  // Пока CMS загружается — белый экран
   if (!isReady) {
     return (
       <div
