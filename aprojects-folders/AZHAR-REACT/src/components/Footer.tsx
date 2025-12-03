@@ -1,18 +1,18 @@
-function Header() {
+import { useText } from "../cms/useText";
+
+export default function Footer() {
   return (
     <footer>
         <div className="footer-container">
             <div className="footer-content">
-                <h3 className="footer-title">КГП на ПХВ "Областной реабилитационный центр"</h3>
-                <p className="footer-subtitle">Здоровье и развитие детей — наш главный приоритет</p>
+                <h3 className="footer-title">{useText("footer.title")}</h3>
+                <p className="footer-subtitle">{useText("footer.subtitle")}</p>
             </div>
             <div className="footer-divider"></div>
             <div className="footer-copyright">
-                <p>© 2025 КГП на ПХВ "Областной реабилитационный центр". Все права защищены.</p>
+                <p>{useText("footer.copyright")}</p>
             </div>
         </div>
     </footer>
   );
 }
-
-export default Header;

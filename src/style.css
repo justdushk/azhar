@@ -22,7 +22,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Главный контейнер */
 main {
   width: 100%;
   min-width: 100%;
@@ -43,14 +42,6 @@ header {
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(226, 232, 240, 0.5);
   transition: all 0.3s ease;
-}
-
-.about, .services, .values, .contact {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
 }
 
 header.scrolled {
@@ -703,7 +694,6 @@ nav a:hover::before {
   margin: 0;
 }
 
-/* Внутренний контейнер для контента контактов */
 .contact-container {
   max-width: 1440px;
   margin: 0 auto;
@@ -1257,7 +1247,6 @@ footer {
   opacity: 1;
 }
 
-/* Переключатель языков */
 .lang-switcher {
     display: flex;
     gap: 0.5rem;

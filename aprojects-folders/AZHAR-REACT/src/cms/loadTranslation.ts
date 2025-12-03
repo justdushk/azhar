@@ -9,7 +9,7 @@ export async function loadTranslations(lang: "ru" | "kz") {
     .select("*");
 
   if (error) {
-    console.error("Ошибка загрузки:", error);
+    console.error("❌ Ошибка загрузки:", error);
     return;
   }
 
@@ -22,7 +22,8 @@ export async function loadTranslations(lang: "ru" | "kz") {
 
   useContentStore.getState().setContent(map);
 
+  // ✔ Говорим приложению: «можно показывать страницу»
   useContentStore.getState().setReady(true);
 
-  console.log("Переводы загружены в store:", map);
+  console.log("✅ Переводы загружены в store:", map);
 }
