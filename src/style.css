@@ -453,6 +453,14 @@ nav a:hover::before {
   line-height: 1.2;
 }
 
+.about, .services, .values, .contact {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
 .section-description {
   font-size: 1.0625rem;
   color: #64748B;

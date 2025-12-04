@@ -12,21 +12,27 @@ import { loadTranslations } from "./cms/loadTranslation";
 import "./style.css";
 
 function App() {
+  const isReady = useContentStore((s) => s.isReady);
+
   useEffect(() => {
     const savedLang = (localStorage.getItem("language") as "ru" | "kz") || "ru";
     loadTranslations(savedLang);
   }, []);
+
   useEffect(() => {
     const anchors = document.querySelectorAll('a[href^="#"]');
-    const handleClick = (e: any) => {
+    const handleClick = (e: Event) => {
       e.preventDefault();
-      const href = e.currentTarget.getAttribute("href");
-      if (href === "#") return;
-      const target = document.querySelector(href);
-      if (!target) return;
+      const target = e.currentTarget as HTMLAnchorElement;
+      const href = target.getAttribute("href");
+      if (!href || href === "#") return;
+      
+      const element = document.querySelector(href);
+      if (!element) return;
+      
       const header = document.querySelector("header");
       const headerHeight = header ? header.offsetHeight : 0;
-      const top = (target as HTMLElement).offsetTop - headerHeight;
+      const top = (element as HTMLElement).offsetTop - headerHeight;
 
       window.scrollTo({
         top,
@@ -44,34 +50,30 @@ function App() {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          (entry.target as HTMLElement).style.opacity = '1';
-          (entry.target as HTMLElement).style.transform = 'translateY(0)';
+          const element = entry.target as HTMLElement;
+          element.style.opacity = '1';
+          element.style.transform = 'translateY(0)';
         }
       });
     }, observerOptions);
 
-    const elements = document.querySelectorAll(".service-card, .value-item, .feature");
-    elements.forEach((el) => {
-      const element = el as HTMLElement;
-      element.style.opacity = '0';
-      element.style.transform = 'translateY(30px)';
-      element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-      observer.observe(element);
-    });
+    const timer = setTimeout(() => {
+      const elements = document.querySelectorAll(".service-card, .value-item, .feature");
+      elements.forEach((el) => {
+        const element = el as HTMLElement;
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(30px)';
+        element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(element);
+      });
+    }, 100);
 
     return () => {
+      clearTimeout(timer);
       anchors.forEach((a) => a.removeEventListener("click", handleClick));
-      elements.forEach((el) => observer.unobserve(el));
       observer.disconnect();
     };
-  }, []);
-
-  const isReady = useContentStore((s) => s.isReady);
-
-  useEffect(() => {
-    const savedLang = (localStorage.getItem("language") as "ru" | "kz") || "ru";
-    loadTranslations(savedLang);
-  }, []);
+  }, [isReady]);
 
   if (!isReady) {
     return (
