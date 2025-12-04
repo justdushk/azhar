@@ -1,13 +1,50 @@
-import { useState } from "react";
-import { useText } from "../cms/useText";
+import { useState, useEffect } from "react";
+import { useContentStore } from "../cms/contentStore";
 import { loadTranslations } from "../cms/loadTranslation";
+import { supabase } from "../cms/supabaseClient";
 import logo from "../assets/logo.png";
+
+interface MenuItem {
+  id: string;
+  key: string;
+  url: string;
+  order_index: number;
+  parent_id: string | null;
+}
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState<"ru" | "kz">(
     () => (localStorage.getItem("language") as "ru" | "kz") || "ru"
   );
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const content = useContentStore((s) => s.content);
+
+  useEffect(() => {
+    loadMenuItems();
+  }, []);
+
+  const loadMenuItems = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("menu_items")
+        .select("*")
+        .eq("is_active", true)
+        .order("order_index");
+
+      if (error) {
+        console.error("Ошибка загрузки меню:", error);
+        return;
+      }
+
+      if (data) {
+        setMenuItems(data);
+      }
+    } catch (err) {
+      console.error("Непредвиденная ошибка загрузки меню:", err);
+    }
+  };
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -19,12 +56,16 @@ export default function Header() {
     localStorage.setItem("language", lang);
   };
 
-  // Получаем тексты из store
-  const headerTitle = useText("header.title");
-  const navAbout = useText("header.nav.about");
-  const navServices = useText("header.nav.services");
-  const navValues = useText("header.nav.values");
-  const navContact = useText("header.nav.contact");
+  const getText = (key: string) => {
+    return content[key] || key;
+  };
+
+  const headerTitle = getText("header.title");
+  const mainItems = menuItems.filter(item => !item.parent_id);
+  
+  const getSubItems = (parentId: string) => {
+    return menuItems.filter(item => item.parent_id === parentId);
+  };
 
   return (
     <>
@@ -53,14 +94,49 @@ export default function Header() {
             <span></span>
           </button>
 
-          <nav
-            id="mainNav"
-            className={menuOpen ? "active" : ""}
-          >
-            <a href="#about" onClick={() => setMenuOpen(false)}>{navAbout}</a>
-            <a href="#services" onClick={() => setMenuOpen(false)}>{navServices}</a>
-            <a href="#values" onClick={() => setMenuOpen(false)}>{navValues}</a>
-            <a href="#contact" onClick={() => setMenuOpen(false)}>{navContact}</a>
+          <nav id="mainNav" className={menuOpen ? "active" : ""}>
+            {mainItems.map((item) => {
+              const subItems = getSubItems(item.id);
+              const hasSubItems = subItems.length > 0;
+
+              if (hasSubItems) {
+                return (
+                  <div 
+                    key={item.id}
+                    className="nav-item-wrapper has-dropdown"
+                    onMouseEnter={() => setActiveDropdown(item.id)}
+                    onMouseLeave={() => setActiveDropdown(null)}
+                  >
+                    <span className="nav-link">
+                      {getText(item.key)}
+                    </span>
+                    
+                    <div className={`dropdown-menu ${activeDropdown === item.id ? 'active' : ''}`}>
+                      {subItems.map((subItem) => (
+                        <a 
+                          key={subItem.id}
+                          href={subItem.url}
+                          className="dropdown-item"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          {getText(subItem.key)}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <a 
+                  key={item.id}
+                  href={item.url} 
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {getText(item.key)}
+                </a>
+              );
+            })}
 
             <div className="lang-switcher">
               <span
