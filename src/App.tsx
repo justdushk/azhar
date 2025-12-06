@@ -1,18 +1,37 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useContentStore } from "./cms/contentStore";
+import { supabase } from "./cms/supabaseClient";
 import Header from "./components/Header.tsx";
-import Hero from "./components/Hero.tsx";
-import About from "./components/About.tsx";
-import Services from "./components/Services.tsx";
-import Values from "./components/Values.tsx";
-import Contacts from "./components/Contact.tsx";
-import Footer from "./components/Footer.tsx";
+import DynamicSection from "./components/DynamicSection.tsx";
 import { loadTranslations } from "./cms/loadTranslation";
 
 import "./style.css";
 
+interface SectionItem {
+  id: string;
+  item_type: string;
+  content_key_badge?: string;
+  content_key_title?: string;
+  content_key_text?: string;
+  icon_text?: string;
+  order_index: number;
+  metadata?: any;
+}
+
+interface Section {
+  id: string;
+  section_key: string;
+  section_type: string;
+  order_index: number;
+  css_classes: string;
+  grid_columns?: number;
+  items: SectionItem[];
+}
+
 function App() {
   const isReady = useContentStore((s) => s.isReady);
+  const [sections, setSections] = useState<Section[]>([]);
+  const [sectionsLoaded, setSectionsLoaded] = useState(false);
 
   useEffect(() => {
     const savedLang = (localStorage.getItem("language") as "ru" | "kz") || "ru";
@@ -20,6 +39,42 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (isReady) {
+      loadSections();
+    }
+  }, [isReady]);
+
+  const loadSections = async () => {
+    const { data: sectionsData } = await supabase
+      .from("sections")
+      .select("*")
+      .eq("is_active", true)
+      .order("order_index");
+
+    if (!sectionsData) return;
+
+    const sectionsWithItems = await Promise.all(
+      sectionsData.map(async (section) => {
+        const { data: items } = await supabase
+          .from("section_items")
+          .select("*")
+          .eq("section_id", section.id)
+          .order("order_index");
+
+        return {
+          ...section,
+          items: items || [],
+        };
+      })
+    );
+
+    setSections(sectionsWithItems);
+    setSectionsLoaded(true);
+  };
+
+  useEffect(() => {
+    if (!sectionsLoaded) return;
+
     const anchors = document.querySelectorAll('a[href^="#"]');
     const handleClick = (e: Event) => {
       e.preventDefault();
@@ -73,9 +128,9 @@ function App() {
       anchors.forEach((a) => a.removeEventListener("click", handleClick));
       observer.disconnect();
     };
-  }, [isReady]);
+  }, [sectionsLoaded]);
 
-  if (!isReady) {
+  if (!isReady || !sectionsLoaded) {
     return (
       <div
         style={{
@@ -87,17 +142,18 @@ function App() {
     );
   }
 
+  const mainSections = sections.filter(s => s.section_type !== 'footer');
+  const footerSection = sections.find(s => s.section_type === 'footer');
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Header />
       <main>
-        <Hero />
-        <About />
-        <Services />
-        <Values />
-        <Contacts />
+        {mainSections.map(section => (
+          <DynamicSection key={section.id} section={section} />
+        ))}
       </main>
-      <Footer />
+      {footerSection && <DynamicSection section={footerSection} />}
     </Suspense>
   );
 }
