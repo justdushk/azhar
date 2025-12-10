@@ -67,6 +67,12 @@ export default function Header() {
     return menuItems.filter(item => item.parent_id === parentId);
   };
 
+  // Функция плавного скролла вверх
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setMenuOpen(false);
+  };
+
   return (
     <>
       <div
@@ -77,8 +83,8 @@ export default function Header() {
 
       <header id="header">
         <div className="nav-container">
-          <a href="#top" className="logo">
-            <div className="logo-mark">
+          <a href="#top" className="logo" onClick={scrollToTop}>
+            <div className="logo-mark" onClick={scrollToTop}>
               <img src={logo} alt="Логотип" />
             </div>
             <span>{headerTitle}</span>
