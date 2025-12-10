@@ -26,28 +26,13 @@ export default function Header() {
   }, []);
 
   const loadMenuItems = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("menu_items")
-        .select("*")
-        .eq("is_active", true)
-        .order("order_index");
+    const { data, error } = await supabase
+      .from("menu_items")
+      .select("*")
+      .eq("is_active", true)
+      .order("order_index");
 
-      if (error) {
-        console.error("Ошибка загрузки меню:", error);
-        return;
-      }
-
-      if (data) {
-        setMenuItems(data);
-      }
-    } catch (err) {
-      console.error("Непредвиденная ошибка загрузки меню:", err);
-    }
-  };
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+    if (!error && data) setMenuItems(data);
   };
 
   const switchLang = async (lang: "ru" | "kz") => {
@@ -56,15 +41,20 @@ export default function Header() {
     localStorage.setItem("language", lang);
   };
 
-  const getText = (key: string) => {
-    return content[key] || key;
-  };
+  const getText = (key: string) => content[key] || key;
 
-  const headerTitle = getText("header.title");
-  const mainItems = menuItems.filter(item => !item.parent_id);
-  
-  const getSubItems = (parentId: string) => {
-    return menuItems.filter(item => item.parent_id === parentId);
+  // верхние пункты меню
+  const mainItems = menuItems.filter((item) => !item.parent_id);
+
+  // поиск дочерних пунктов
+  const getSubItems = (parentId: string) =>
+    menuItems.filter((item) => item.parent_id === parentId);
+
+  // трансформация ссылок
+  const normalizeUrl = (url: string) => {
+    if (!url) return "#";
+    if (url.startsWith("#")) return url;
+    return `#${url}`;
   };
 
   return (
@@ -77,23 +67,26 @@ export default function Header() {
 
       <header id="header">
         <div className="nav-container">
+          {/* Логотип */}
           <a href="#top" className="logo">
             <div className="logo-mark">
               <img src={logo} alt="Логотип" />
             </div>
-            <span>{headerTitle}</span>
+            <span>{getText("header.title")}</span>
           </a>
 
+          {/* Мобайл кнопка */}
           <button
             id="mobileToggle"
             className={menuOpen ? "active mobile-toggle" : "mobile-toggle"}
-            onClick={toggleMenu}
+            onClick={() => setMenuOpen((v) => !v)}
           >
             <span></span>
             <span></span>
             <span></span>
           </button>
 
+          {/* Меню */}
           <nav id="mainNav" className={menuOpen ? "active" : ""}>
             {mainItems.map((item) => {
               const subItems = getSubItems(item.id);
@@ -101,7 +94,7 @@ export default function Header() {
 
               if (hasSubItems) {
                 return (
-                  <div 
+                  <div
                     key={item.id}
                     className="nav-item-wrapper has-dropdown"
                     onMouseEnter={() => setActiveDropdown(item.id)}
@@ -110,16 +103,20 @@ export default function Header() {
                     <span className="nav-link">
                       {getText(item.key)}
                     </span>
-                    
-                    <div className={`dropdown-menu ${activeDropdown === item.id ? 'active' : ''}`}>
-                      {subItems.map((subItem) => (
-                        <a 
-                          key={subItem.id}
-                          href={subItem.url}
+
+                    <div
+                      className={`dropdown-menu ${
+                        activeDropdown === item.id ? "active" : ""
+                      }`}
+                    >
+                      {subItems.map((sub) => (
+                        <a
+                          key={sub.id}
+                          href={normalizeUrl(sub.url)}
                           className="dropdown-item"
                           onClick={() => setMenuOpen(false)}
                         >
-                          {getText(subItem.key)}
+                          {getText(sub.key)}
                         </a>
                       ))}
                     </div>
@@ -128,9 +125,9 @@ export default function Header() {
               }
 
               return (
-                <a 
+                <a
                   key={item.id}
-                  href={item.url} 
+                  href={normalizeUrl(item.url)}
                   onClick={() => setMenuOpen(false)}
                 >
                   {getText(item.key)}
@@ -138,17 +135,24 @@ export default function Header() {
               );
             })}
 
+            {/* Переключатель языка */}
             <div className="lang-switcher">
               <span
-                id="langRu"
-                className={currentLang === "ru" ? "lang-option active" : "lang-option"}
+                className={
+                  currentLang === "ru"
+                    ? "lang-option active"
+                    : "lang-option"
+                }
                 onClick={() => switchLang("ru")}
               >
                 RUS
               </span>
               <span
-                id="langKz"
-                className={currentLang === "kz" ? "lang-option active" : "lang-option"}
+                className={
+                  currentLang === "kz"
+                    ? "lang-option active"
+                    : "lang-option"
+                }
                 onClick={() => switchLang("kz")}
               >
                 QAZ
