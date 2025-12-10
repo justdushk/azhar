@@ -1,8 +1,8 @@
 import { Suspense, useEffect, useState } from "react";
 import { useContentStore } from "./cms/contentStore";
 import { supabase } from "./cms/supabaseClient";
-import Header from "./components/Header.tsx";
-import DynamicSection from "./components/DynamicSection.tsx";
+import Header from "./components/Header";
+import DynamicSection from "./components/DynamicSection";
 import { loadTranslations } from "./cms/loadTranslation";
 
 import "./style.css";
@@ -75,39 +75,52 @@ function App() {
   useEffect(() => {
     if (!sectionsLoaded) return;
 
-    const anchors = document.querySelectorAll('a[href^="#"]');
-    const handleClick = (e: Event) => {
-      e.preventDefault();
-      const target = e.currentTarget as HTMLAnchorElement;
-      const href = target.getAttribute("href");
+    // ---- Делегирование кликов для якорей (работает с динамическими ссылками) ----
+    const handleDocumentClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+
+      // closest ищет родительский <a href="#...">
+      const anchor = target.closest && (target.closest('a[href^="#"]') as HTMLAnchorElement | null);
+      if (!anchor) return;
+
+      const href = anchor.getAttribute("href");
       if (!href || href === "#") return;
-      
-      const element = document.querySelector(href);
+
+      // предотвращаем стандартный jump
+      e.preventDefault();
+
+      // ищем элемент по селектору (href — вроде "#contacts")
+      const element = document.querySelector(href) as HTMLElement | null;
       if (!element) return;
-      
-      const header = document.querySelector("header");
+
+      // корректный подсчёт абсолютной позиции
+      const header = document.querySelector("header") as HTMLElement | null;
       const headerHeight = header ? header.offsetHeight : 0;
-      const top = (element as HTMLElement).offsetTop - headerHeight;
+
+      const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
+      const scrollTo = Math.max(0, elementTop - headerHeight);
 
       window.scrollTo({
-        top,
+        top: scrollTo,
         behavior: "smooth",
       });
     };
 
-    anchors.forEach((a) => a.addEventListener("click", handleClick));
+    document.addEventListener("click", handleDocumentClick);
 
-    const observerOptions = { 
-      threshold: 0.1, 
-      rootMargin: "0px 0px -50px 0px" 
+    // ---- IntersectionObserver для появления элементов ----
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px",
     };
-    
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const element = entry.target as HTMLElement;
-          element.style.opacity = '1';
-          element.style.transform = 'translateY(0)';
+          element.style.opacity = "1";
+          element.style.transform = "translateY(0)";
         }
       });
     }, observerOptions);
@@ -116,16 +129,16 @@ function App() {
       const elements = document.querySelectorAll(".service-card, .value-item, .feature");
       elements.forEach((el) => {
         const element = el as HTMLElement;
-        element.style.opacity = '0';
-        element.style.transform = 'translateY(30px)';
-        element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        element.style.opacity = "0";
+        element.style.transform = "translateY(30px)";
+        element.style.transition = "opacity 0.6s ease, transform 0.6s ease";
         observer.observe(element);
       });
     }, 100);
 
     return () => {
       clearTimeout(timer);
-      anchors.forEach((a) => a.removeEventListener("click", handleClick));
+      document.removeEventListener("click", handleDocumentClick);
       observer.disconnect();
     };
   }, [sectionsLoaded]);
@@ -142,14 +155,16 @@ function App() {
     );
   }
 
-  const mainSections = sections.filter(s => s.section_type !== 'footer');
-  const footerSection = sections.find(s => s.section_type === 'footer');
+  const mainSections = sections.filter((s) => s.section_type !== "footer");
+  const footerSection = sections.find((s) => s.section_type === "footer");
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Header />
       <main>
-        {mainSections.map(section => (
+        {mainSections.map((section) => (
+          // важно: DynamicSection должен ставить id секции на корневой элемент,
+          // например <section id={section.section_key}> ... </section>
           <DynamicSection key={section.id} section={section} />
         ))}
       </main>
