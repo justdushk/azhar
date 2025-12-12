@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 
 const translations = {
   ru: {
@@ -7,6 +7,7 @@ const translations = {
     menu: "Меню",
     sections: "Секции",
     pages: "Страницы",
+    backToSite: "Вернуться на сайт",
   },
   kz: {
     adminPanel: "Админ-панель",
@@ -14,6 +15,7 @@ const translations = {
     menu: "Мәзір",
     sections: "Секциялар",
     pages: "Беттер",
+    backToSite: "Сайтқа оралу",
   },
 };
 
@@ -55,6 +57,15 @@ export default function Sidebar({ systemLang }: SidebarProps) {
           📑 {t.pages}
         </NavLink>
       </nav>
+
+      <div className="leave-btn">
+        <Link
+          to="/"
+        >
+          <span>←</span>
+          <span>{t.backToSite}</span>
+        </Link>
+      </div>
     </aside>
   );
 }

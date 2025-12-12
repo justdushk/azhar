@@ -13,13 +13,11 @@ export default function AdminLayout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Проверяем текущую сессию
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    // Слушаем изменения авторизации
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -29,14 +27,12 @@ export default function AdminLayout() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Загружаем общее количество ключей переводов
   useEffect(() => {
     if (user) {
       loadTotalKeys();
     }
   }, [user]);
 
-  // Загружаем сохраненные языки из localStorage
   useEffect(() => {
     const savedSystemLang = localStorage.getItem('adminSystemLang') as "ru" | "kz";
     const savedContentLang = localStorage.getItem('adminContentLang') as "ru" | "kz";
@@ -83,7 +79,6 @@ export default function AdminLayout() {
     );
   }
 
-  // Если не авторизован - редирект на страницу логина
   if (!user) {
     return <Navigate to="/azhar/admin" replace />;
   }
