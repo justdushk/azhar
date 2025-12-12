@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Outlet, Navigate } from 'react-router-dom';
+import { Outlet, Navigate, useNavigate } from 'react-router-dom';
 import { supabase } from '../cms/supabaseClient';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
@@ -10,22 +10,22 @@ export default function AdminLayout() {
   const [systemLang, setSystemLang] = useState<"ru" | "kz">("ru");
   const [contentLang, setContentLang] = useState<"ru" | "kz">("ru");
   const [totalKeys, setTotalKeys] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    checkUser();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const checkUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    setUser(session?.user ?? null);
-    setLoading(false);
-  };
 
   useEffect(() => {
     if (user) {
@@ -61,7 +61,7 @@ export default function AdminLayout() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    window.location.href = '/azhar/admin';
+    navigate('/azhar/admin');
   };
 
   if (loading) {
