@@ -6,4 +6,7 @@ const isVercel = process.env.VERCEL === '1'
 export default defineConfig({
   base: isVercel ? '/' : '/azhar/',
   plugins: [react()],
+  build: {
+    outDir: 'dist',
+  },
 })
