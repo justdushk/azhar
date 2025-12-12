@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../cms/supabaseClient";
 import { Link } from "react-router-dom";
@@ -31,27 +31,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [checkingSession, setCheckingSession] = useState(true);
   const [systemLang, setSystemLang] = useState<"ru" | "kz">("ru");
   const navigate = useNavigate();
   const t = translations[systemLang];
-
-  useEffect(() => {
-    // Проверяем, авторизован ли уже пользователь
-    checkSession();
-  }, [navigate]);
-
-  const checkSession = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    console.log('Login page - checking session:', session?.user?.email);
-    
-    if (session) {
-      console.log('User already logged in, redirecting...');
-      navigate('/azhar/admin/translations', { replace: true });
-    } else {
-      setCheckingSession(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,46 +41,26 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
-        console.error('Login error:', error);
         setError(error.message);
-      } else if (data.session) {
-        console.log('Login successful, redirecting...');
-        // Успешный логин - перенаправляем на страницу переводов
-        navigate('/azhar/admin/translations', { replace: true });
+        setLoading(false);
+      } else {
+        // Успешный логин - перенаправляем
+        window.location.href = '/azhar/admin/translations';
       }
     } catch (err) {
-      console.error('Login exception:', err);
       setError(t.errorGeneric);
-    } finally {
       setLoading(false);
     }
   };
 
-  // Показываем загрузку пока проверяем сессию
-  if (checkingSession) {
-    return (
-      <div style={{ 
-        width: "100vw", 
-        height: "100vh", 
-        display: "flex", 
-        alignItems: "center", 
-        justifyContent: "center",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-      }}>
-        <div style={{ fontSize: "1.25rem", color: "white" }}>Загрузка...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="login-container">
-      {/* Переключатель языка */}
       <div className="login-lang-switcher">
         <button
           className={systemLang === "ru" ? "lang-btn active" : "lang-btn"}

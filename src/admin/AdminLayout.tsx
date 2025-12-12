@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Outlet, Navigate, useNavigate } from 'react-router-dom';
+import { Outlet, Navigate } from 'react-router-dom';
 import { supabase } from '../cms/supabaseClient';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
@@ -10,31 +10,19 @@ export default function AdminLayout() {
   const [systemLang, setSystemLang] = useState<"ru" | "kz">("ru");
   const [contentLang, setContentLang] = useState<"ru" | "kz">("ru");
   const [totalKeys, setTotalKeys] = useState(0);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    // Проверяем сессию при загрузке
-    checkSession();
+    checkUser();
 
-    // Слушаем изменения auth состояния
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth state changed:', _event, session?.user?.email);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      
-      // Если вышли - редиректим на логин
-      if (_event === 'SIGNED_OUT') {
-        navigate('/azhar/admin', { replace: true });
-      }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, []);
 
-  const checkSession = async () => {
+  const checkUser = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    console.log('Current session:', session?.user?.email);
     setUser(session?.user ?? null);
     setLoading(false);
   };
@@ -72,21 +60,8 @@ export default function AdminLayout() {
   };
 
   const handleLogout = async () => {
-    console.log('Logging out...');
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error('Logout error:', error);
-      } else {
-        console.log('Logged out successfully');
-        // Очищаем состояние
-        setUser(null);
-        // Редиректим на логин
-        navigate('/azhar/admin', { replace: true });
-      }
-    } catch (err) {
-      console.error('Logout exception:', err);
-    }
+    await supabase.auth.signOut();
+    window.location.href = '/azhar/admin';
   };
 
   if (loading) {
@@ -105,7 +80,6 @@ export default function AdminLayout() {
   }
 
   if (!user) {
-    console.log('No user, redirecting to login');
     return <Navigate to="/azhar/admin" replace />;
   }
 
