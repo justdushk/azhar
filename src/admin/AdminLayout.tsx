@@ -13,19 +13,31 @@ export default function AdminLayout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    // Проверяем сессию при загрузке
+    checkSession();
 
+    // Слушаем изменения auth состояния
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Auth state changed:', _event, session?.user?.email);
       setUser(session?.user ?? null);
+      
+      // Если вышли - редиректим на логин
+      if (_event === 'SIGNED_OUT') {
+        navigate('/azhar/admin', { replace: true });
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
+
+  const checkSession = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    console.log('Current session:', session?.user?.email);
+    setUser(session?.user ?? null);
+    setLoading(false);
+  };
 
   useEffect(() => {
     if (user) {
@@ -60,8 +72,21 @@ export default function AdminLayout() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/azhar/admin');
+    console.log('Logging out...');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Logout error:', error);
+      } else {
+        console.log('Logged out successfully');
+        // Очищаем состояние
+        setUser(null);
+        // Редиректим на логин
+        navigate('/azhar/admin', { replace: true });
+      }
+    } catch (err) {
+      console.error('Logout exception:', err);
+    }
   };
 
   if (loading) {
@@ -80,6 +105,7 @@ export default function AdminLayout() {
   }
 
   if (!user) {
+    console.log('No user, redirecting to login');
     return <Navigate to="/azhar/admin" replace />;
   }
 
