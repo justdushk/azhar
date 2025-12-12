@@ -1,16 +1,42 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../cms/supabaseClient";
+import { Link } from "react-router-dom";
+
+const translations = {
+  ru: {
+    title: "Вход в систему",
+    subtitle: "Введите ваши учетные данные",
+    email: "Email",
+    password: "Пароль",
+    login: "Войти",
+    loginProgress: "Вход...",
+    backToSite: "Вернуться на сайт",
+    errorGeneric: "Произошла ошибка при входе",
+  },
+  kz: {
+    title: "Жүйеге кіру",
+    subtitle: "Есептік деректеріңізді енгізіңіз",
+    email: "Email",
+    password: "Құпия сөз",
+    login: "Кіру",
+    loginProgress: "Кіру...",
+    backToSite: "Сайтқа оралу",
+    errorGeneric: "Кіру кезінде қате пайда болды",
+  }
+};
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [systemLang, setSystemLang] = useState<"ru" | "kz">("ru");
   const navigate = useNavigate();
+  const t = translations[systemLang];
 
   useEffect(() => {
-    // Если уже авторизован, редиректим на translations
+    // Проверяем, авторизован ли уже пользователь
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         navigate('/azhar/admin/translations');
@@ -32,11 +58,11 @@ export default function LoginPage() {
       if (error) {
         setError(error.message);
       } else if (data.session) {
-        // После успешного входа редиректим на translations
+        // Успешный логин - перенаправляем на страницу переводов
         navigate('/azhar/admin/translations');
       }
     } catch (err) {
-      setError("Произошла ошибка при входе");
+      setError(t.errorGeneric);
     } finally {
       setLoading(false);
     }
@@ -44,17 +70,33 @@ export default function LoginPage() {
 
   return (
     <div className="login-container">
+      {/* Переключатель языка */}
+      <div className="login-lang-switcher">
+        <button
+          className={systemLang === "ru" ? "lang-btn active" : "lang-btn"}
+          onClick={() => setSystemLang("ru")}
+        >
+          RUS
+        </button>
+        <button
+          className={systemLang === "kz" ? "lang-btn active" : "lang-btn"}
+          onClick={() => setSystemLang("kz")}
+        >
+          QAZ
+        </button>
+      </div>
+
       <div className="login-card">
         <div className="login-header">
-          <h1>Вход в систему</h1>
-          <p>Введите ваши учетные данные</p>
+          <h1>{t.title}</h1>
+          <p>{t.subtitle}</p>
         </div>
         
         <form onSubmit={handleSubmit} className="login-form">
           {error && <div className="error-message">{error}</div>}
           
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">{t.email}</label>
             <input
               id="email"
               type="email"
@@ -67,7 +109,7 @@ export default function LoginPage() {
           </div>
           
           <div className="form-group">
-            <label htmlFor="password">Пароль</label>
+            <label htmlFor="password">{t.password}</label>
             <input
               id="password"
               type="password"
@@ -83,8 +125,15 @@ export default function LoginPage() {
             className="login-btn"
             disabled={loading}
           >
-            {loading ? "Вход..." : "Войти"}
+            {loading ? t.loginProgress : t.login}
           </button>
+
+          <div className="leave-btn-2">
+            <Link to="/">
+              <span>←</span>
+              <span>{t.backToSite}</span>
+            </Link>
+          </div>
         </form>
       </div>
     </div>
