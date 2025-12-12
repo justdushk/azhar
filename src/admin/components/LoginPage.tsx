@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "../../cms/supabaseClient";
 import { Link } from "react-router-dom";
 
@@ -32,7 +31,6 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [systemLang, setSystemLang] = useState<"ru" | "kz">("ru");
-  const navigate = useNavigate();
   const t = translations[systemLang];
 
   const handleSubmit = async (e: React.FormEvent) => {
